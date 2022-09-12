@@ -34,11 +34,12 @@ Sigmoid fitting of local plateaus
 We proceed to apply a sigmoid fitting of each local plateau, based on the S-G smoothed z-scored dF/F signal across all neurons. The fitting window starts at the first frame of the local plateau of the neuron. If the start of the corresponding segment is nearest, then we take this as the start of the sigmoid fitting. It ends at the maximum amplitude of the detected peak   extended by a small margin, estimated on the smoothed z-scored dF/F signal of the neuron. Specifically, this margin is the frame immediately after the 95th percentile margin -  that follows the detected peak. The start of the sigmoid fitting window is estimated by “mirroring” to the left the frames up to the maximum amplitude with respect to the onset of the local plateau - unless the segment start is earlier. 
 The sigmoidal fitting of the local plateaus is defined by three parameters, namely, the maximum amplitude Rmax, the time at which the amplitude is at half maximum S1/2, and a parameter related to the slope at half-maximum amplitude 
 
-rSeff =Rmax1+e-Seff-S1/2, >0, where Slope1/2=Rmax4.
+rSeff =Rmax/(1+exp(-α(Seff-S1/2))), >0, 
 
-Seff is referred to as the effective threshold; it is the x-intercept of the tangent to the sigmoidal fit at half maximum. It roughly corresponds to the time beyond which the local plateau starts picking up. Both Seff and S1/2 (denoted also as X50) must be calibrated on to the start of the respective population plateau (burst) for defining the order of engagement of each neuron in this specific burst. Or, we can simply use the start of the local plateau for the estimation of the order of engagement after we have filtered out the local plateaus with poor sigmoid fitting.
+where parameter α is related to the slope at half-maximum amplitude according to the formula 
 
-
+Slope1/2=αRmax/4
 
 The optimization of parameters of the sigmoid function is performed using the non-linear least square regression nlinfit function of MATLAB 2017a.  The coefficient of determination R2 is used to evaluate the goodness of the fit between the smoothed z-scored dF/F signal of the neuron and the fitted one. Only the fittings with at least R2 equal to 0.8 are taken into account; hence the local plateaus were “filtered” on the basis of good sigmoid temporal fitting. We evaluated mean and standard errors over uniform histogram bins of sigmoid parameters across mice in order to depict their variability. 
 
+We can use the start of the local plateau for the estimation of the order of engagement after we have filtered out the local plateaus with poor sigmoid fitting. We must calibrate local plateaus to the start of the respective population plateau (burst) for defining the order of engagement of each neuron in this specific burst. 
