@@ -1,4 +1,4 @@
-function [param,stat,MSE]=sigm_fit_exp(x,y,fixed_params,initial_params,plot_flag)
+function [param,stat,MSE]=sigm_fit(x,y,fixed_params,initial_params,plot_flag)
 % Optimization of parameters of the sigmoid function
 %
 % Syntax:
@@ -12,6 +12,7 @@ function [param,stat,MSE]=sigm_fit_exp(x,y,fixed_params,initial_params,plot_flag
 %       [param]=sigm_fit(x,y,fixed_params,initial_params,plot_flag)
 %
 % param = [min, max, x50, slope]
+%automatic_initial_params=[quantile(y,0.05) quantile(y,0.95) NaN 1];
 %
 % if fixed_params=[NaN, NaN , NaN , NaN]        % or fixed_params=[]
 % optimization of "min", "max", "x50" and "slope" (default)
@@ -41,6 +42,7 @@ function [param,stat,MSE]=sigm_fit_exp(x,y,fixed_params,initial_params,plot_flag
 %
 % %% parameter estimation without plotting
 % [estimated_params]=sigm_fit(x,y,[],[],0)
+%  [param,stat,MSE]=sigm_fit(x,y,[],[],0);
 %
 %
 % Doubts, bugs: rpavao@gmail.com
