@@ -1,9 +1,9 @@
-function [plateau_start, plateau_end, timeseries_gl] = global_plateaus_init(forConcat,k,timeseriesl)
+function [plateau_start, plateau_end, timeseries_gl] = global_plateaus_init(forConcatV,forConcatP,k,timeseriesl)
 %for each one of the neurons
 % find frames that are in noise interval;
 % construct the signal with 0 at noise interval frames and >0 values in
 % the rest of the frames
-    [cellnum,number_of_frames]=size(timeseriesl);
+    [number_of_frames,cellnum]=size(timeseriesl);
     timeseries_gl=ones(number_of_frames,1); % here we will keep the 0-1 timeseries
     for_global = sum(timeseriesl,2); 
     
@@ -24,10 +24,10 @@ function [plateau_start, plateau_end, timeseries_gl] = global_plateaus_init(forC
             valley_end = [valley_end; temp(j)];
         end
     end
-    % drop valleys of small duration
+    % drop valleys of small duration 100
     valley_dur = [];
     valley_dur = valley_end - valley_start;
-    temp = find(valley_dur<=forConcat);%forConcat 0 leads to more, smaller plateaus
+    temp = find(valley_dur<=forConcatV);%forConcat 0 leads to more, smaller plateaus
     valley_start(temp)=[];
     valley_end(temp)=[];
     valley_start_c=valley_start(1);
@@ -37,7 +37,7 @@ function [plateau_start, plateau_end, timeseries_gl] = global_plateaus_init(forC
     % discard;small plateaus are omitted this way
     for i=2:length(valley_start)
         temp = valley_start(i)-valley_end(i-1)-2; % valley_start(i)-1 - (valley_end(i-1)+1)
-        if temp<=forConcat
+        if temp<=forConcatP%2nd forConcat 211
             valley_end_c(counter) = valley_end(i);
         else
             valley_start_c=[valley_start_c; valley_start(i)];
