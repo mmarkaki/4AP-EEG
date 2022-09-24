@@ -1,4 +1,4 @@
-function [neuron_a] = local_plateaus_neuron(y,for_concat)
+function [neuron_a] = local_plateaus_neuron(y,for_concatV,forConcatP)
 %for each one of the neurons
 % find frames that are in noise interval;
 % construct the signal with 0 at noise interval frames and >0 values in
@@ -37,7 +37,7 @@ function [neuron_a] = local_plateaus_neuron(y,for_concat)
     % drop valleys of small duration (smaller than for_concat frames)
     valley_dur = [];
     valley_dur = neuron_a.valley_end - neuron_a.valley_start;%268
-    temp = find(valley_dur<=for_concat);
+    temp = find(valley_dur<=for_concatV);
     neuron_a.valley_start(temp)=[];
     neuron_a.valley_end(temp)=[];
     if (~isempty(neuron_a.valley_end) || ~isempty(neuron_a.valley_start)) 
@@ -50,7 +50,7 @@ function [neuron_a] = local_plateaus_neuron(y,for_concat)
      % plateau:
      for i=2:length(neuron_a.valley_start)
          temp = neuron_a.valley_start(i)-neuron_a.valley_end(i-1);
-            if temp<=for_concat % if less than for_concat frames then do the concat
+            if temp<=forConcatP % if less than for_concat frames then do the concat
             %with the previous valley
             % this means that the end of the valley will be updated
             neuron_a.valley_end_c(counter) = neuron_a.valley_end(i);
