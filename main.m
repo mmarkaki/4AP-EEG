@@ -1,4 +1,4 @@
-#start from raw fluoresence files, where the number of frames per segment has been stored in a vector for ease of processing:
+#start from raw fluorescence files, where the number of frames per segment has been stored in a vector for ease of processing:
 nframes_seg=[8000,8000,8001,8001,32004,32004,32004,32004,32004];
 
 #also the framePeriod stands for the duration of a calcium frame in seconds, it differs per mouse and per segment; these values
@@ -66,3 +66,4 @@ for n=1:cellnum%length(neuron_V(n).plateau_end)
     neuron_a(n).duration = neuron_a(n).plateau_end-neuron_a(n).plateau_start;%maxdur(n)=max(neuron_V(n).duration);%2334 frames
     numb(n)=length(neuron_a(n).plateau_start);%how many plateus
 end
+
