@@ -1,4 +1,4 @@
-function [biglagC,burstID,neuronsID,onsetsCor,Y50s] = ecdf_recruit_disengage(mouse_id,k,plateau_start,plateau_end,neuron,flag)
+function [biglagC,burstID,neuronsID,onfsetsCor,Y50s] = ecdf_recruit_disengage(mouse_id,k,plateau_start,plateau_end,neuron,flag)
 %if flag = 1 recruitment; if flag = 0 disengagement
 %clear all
 %close all
