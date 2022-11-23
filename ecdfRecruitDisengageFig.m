@@ -1,4 +1,4 @@
-function [] = ecdf_recruit_disengage(mouse_id,k,plateau_start,plateau_end,neuron,flag)
+function [biglagC,burstID,neuronsID,onsetsCor,Y50s] = ecdf_recruit_disengage(mouse_id,k,plateau_start,plateau_end,neuron,flag)
 %if flag = 1 recruitment; if flag = 0 disengagement
 %clear all
 %close all
@@ -119,6 +119,10 @@ saveas(gcf,sprintf('E:/figures/mouse%d/4AP/ecdfLags%d.png',mouse_id,mouse_id))
 save(sprintf('matfiles/mouse%d/4AP/mouse%d_iblagC.mat',mouse_id,mouse_id),'biglagC')
 save(sprintf('matfiles/mouse%d/4AP/mouse%d_burstid.mat',mouse_id,mouse_id),'burstID')
 save(sprintf('matfiles/mouse%d/4AP/mouse%d_neuronsid.mat',mouse_id,mouse_id),'neuronsID')
-save(sprintf('matfiles/mouse%d/4AP/mouse%d_onsets.mat',mouse_id,mouse_id),'onsetsCor')
+if flag==1
+    save(sprintf('matfiles/mouse%d/4AP/mouse%d_onsets.mat',mouse_id,mouse_id),'onfsetsCor')
+else
+    save(sprintf('matfiles/mouse%d/4AP/mouse%d_offsets.mat',mouse_id,mouse_id),'onfsetsCor')
+end
 save(sprintf('matfiles/mouse%d/4AP/mouse%d_Y50sec.mat',mouse_id,mouse_id),'Y50s')
 end
