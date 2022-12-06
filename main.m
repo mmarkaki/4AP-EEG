@@ -67,7 +67,7 @@ for n=1:cellnum%length(neuron_V(n).plateau_end)
     numb(n)=length(neuron_a(n).plateau_start);%how many plateus
 end
 
-%prepare to estimate global, population plateaus/bursts:
+%prepare to estimate global, population plateaus/bursts based on all local plateaus, not only the ones with R squared >=0.8:
 timeseriesl=zeros(size(newdff)); % here we will keep the 0-1 timeseries
 for n=1:cellnum % timeseries with 0 at valleys and 1 at plateaus
     for i=1:length(neuron(n).plateau_start)
