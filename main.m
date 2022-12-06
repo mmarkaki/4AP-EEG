@@ -77,3 +77,25 @@ end
 %plot this:
 figure('DefaultAxesFontSize',14)
 plot(100*sum(timeseriesl,2)./cellnum)
+
+%now estimate population plateaus based on timeseriesl:
+num_plateaus = [];
+kk=1:30%check these engagement percentages as potential cutoffs:
+forConcatV=100;
+forConcatP=100;%only for pop plateaus; otherwise forConcatP=211 for local plateaus
+for k=1:length(kk) 
+    [plateau_start, plateau_end, timeseries_gl] = global_plateaus_init(forConcatV,forConcatP,k,timeseriesl);
+    num_plateaus =[num_plateaus length(plateau_start)];
+    save(sprintf('E:/matfiles/mouse%d/4AP/pop_plateaus_start_forConcatV%d_forConcatP%d_k%d.mat',mouse_id,forConcatV,forConcatP,k),'plateau_start')
+    save(sprintf('E:/matfiles/mouse%d/4AP/pop_plateaus_end_forConcatV%d_forConcatP%d_k%d.mat',mouse_id,forConcatV,forConcatP,k),'plateau_end')
+end
+
+%Choice of cutoff could be based on the maximization of the number of global plateaus in this plot: 
+figure('DefaultAxesFontSize',14)
+plot(kk,num_plateaus)
+axis tight
+ylabel('# population plateaus')
+xlabel('engagement (%)')
+title(sprintf('4AP mouse %d',mouse_id))
+saveas(gcf,sprintf('E:/figures/mouse%d/4AP/engagPlateausZforConcatV%d_forConcatP%d.png',mouse_id,forConcatV,forConcatP))
+saveas(gcf,sprintf('E:/figures/mouse%d/4AP/engagPlateausZforConcatV%d_forConcatP%d.fig',mouse_id,forConcatV,forConcatP))
