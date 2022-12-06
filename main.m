@@ -67,3 +67,13 @@ for n=1:cellnum%length(neuron_V(n).plateau_end)
     numb(n)=length(neuron_a(n).plateau_start);%how many plateus
 end
 
+%prepare to estimate global, population plateaus/bursts:
+timeseriesl=zeros(size(newdff)); % here we will keep the 0-1 timeseries
+for n=1:cellnum % timeseries with 0 at valleys and 1 at plateaus
+    for i=1:length(neuron(n).plateau_start)
+        timeseriesl(neuron(n).plateau_start(i):neuron(n).plateau_end(i),n)=1;
+    end
+end
+%plot this:
+figure('DefaultAxesFontSize',14)
+plot(100*sum(timeseriesl,2)./cellnum)
