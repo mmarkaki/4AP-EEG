@@ -35,7 +35,9 @@ for iseg=1:seg_num
         ttt=tstartCa:t_endCa;%calcium frames to consider  
        y1 = filter(b,a,x1);
         %just once compute filterbank fb for speed;Continuous Wavelet Transform of EEG segment using Morlet wavelet
-        %fb = cwtfilterbank('SignalLength',length(y1),'SamplingFrequency',Fs,'FrequencyLimits',[minfreq maxfreq], 'Wavelet',"amor");
+        if iseg==1 & j==1
+            fb = cwtfilterbank('SignalLength',length(y1),'SamplingFrequency',Fs,'FrequencyLimits',[minfreq maxfreq], 'Wavelet',"amor");
+        end
         [cfs, frqs] = wt(fb,y1);%
         nfreqs=length(frqs);
         interp_frqs = log10(frqs);%no interpolation, it takes too much time
