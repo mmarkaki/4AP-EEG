@@ -14,8 +14,7 @@ Fc = 60;%noise to be filtered out from EEG
 Wc = Fc/(Fs/2);
 BW = Wc/10;%35;
 [b,a] = iirnotch(Wc(1),BW(1));%the filter characteristics
-eegTimeSegment = eeg4AP.Time_s(tstart0:tend0);
-yinitial=eeg4AP.CleanEEG_cV(tstart0:tend0, 1);%eg, we initially consider a whole segment
+%we initially consider a whole segment
 %then, we could choose windows within this segment, depending on the application, eg, 50 sec sliding non-overlapping windows:
 fiftysec=50*Fs;%EEG frames
 fiftysecCa=floor(50./framePeriods)%Ca frames
