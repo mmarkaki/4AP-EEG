@@ -320,6 +320,13 @@ gamma1=find(10.^interp_frqs>=30 & 10.^interp_frqs <60)%10 frequencies
 gamma1_5=find(10.^interp_frqs>60 & 10.^interp_frqs <=90)%6 frequencies
 gamma2=find(10.^interp_frqs>=60 & 10.^interp_frqs <100)%17 frequencies/200
 %from 10^1.5786=37 Hz up to 10^1.9097=81.23 Hz, filt
+
+
+avrgOnset=nan(nfreqs,35,100);
+avrgMean=nan(nfreqs,35,100);
+avrgSTD=nan(nfreqs,35,100);
+avrgSEM=nan(nfreqs,35,100);
+avrgZscore=nan(nfreqs,35,100);
 for iseg=5:nseg 
 %     tstartEEG0=1+(iseg-1)*seg_frames;%EEG counter  time started from zero
 %     tendEEG0=iseg*seg_frames%
@@ -626,9 +633,3 @@ for iseg=1:nseg
     end
 end
 
-
-avrgOnset=nan(nfreqs,35,100);
-avrgMean=nan(nfreqs,35,100);
-avrgSTD=nan(nfreqs,35,100);
-avrgSEM=nan(nfreqs,35,100);
-avrgZscore=nan(nfreqs,35,100);
