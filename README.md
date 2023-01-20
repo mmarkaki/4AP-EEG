@@ -43,3 +43,5 @@ Slope1/2=αRmax/4
 The optimization of parameters of the sigmoid function is performed using the non-linear least square regression nlinfit function of MATLAB 2017a.  The coefficient of determination R2 is used to evaluate the goodness of the fit between the smoothed z-scored dF/F signal of the neuron and the fitted one. Only the fittings with at least R2 equal to 0.8 are taken into account; hence the local plateaus were “filtered” on the basis of good sigmoid temporal fitting. We evaluated mean and standard errors over uniform histogram bins of sigmoid parameters across mice in order to depict their variability. 
 
 We can use the start of the local plateau for the estimation of the order of engagement after we have filtered out the local plateaus with poor sigmoid fitting. We must calibrate local plateaus to the start of the respective population plateau (burst) for defining the order of engagement of each neuron in this specific burst. 
+
+EEG CWT and PSD estimation
