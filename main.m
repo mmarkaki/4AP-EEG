@@ -2,14 +2,16 @@
 nframes_seg=[8000,8000,8001,8001,32004,32004,32004,32004,32004];
 
 #also the framePeriod stands for the duration of a calcium frame in seconds, it differs per mouse and per segment; these values
-#can be read from relevant xml nd stored in vectors to load:
+#can be read from relevant xml files and stored in vectors to be saved and loaded later:
 %Mouse 5:framePeriods=[0.033709258,0.033716781,0.033716173,0.033716891,0.033717511,0.033717443,0.033718333,0.033718122,0.033717802,0.033717893,0.033718102,0.033718176,0.033705027];
 load(sprintf('E:/matfiles/mouse%d/4AP/framePeriods.mat',mouse_id))
 
 #coordinates:
-load(sprintf('E:/data/mouse%d/4AP/coordinates.mat',mouse_id))%cord=coordinates(cells4AP,:);
+load(sprintf('E:/data/mouse%d/4AP/coordinates.mat',mouse_id))
+%When ROIs have to be selected based on their probability to be neurons: coordinates(cells4AP,:);
 
-#Relevant preprocessing includes putting the segments in their correct order for mice 4 JL65, 5 JL66, JL06VIP and JL07VIP.
+#Relevant preprocessing includes putting the segments in their correct order for mice 4 JL65, 5 JL66, JL06VIP and JL07VIP;
+#Joseph had put the calcium fluoresence segments in reverse order in these mice; corresponding EEG segments were always in correct order for all mice.
 #Also mice 12 and 13 need a proper selection of cells out of provided ROIs; here, we suppose that these preprocessing steps have been
 #already performed hence we can simply load the corrected raw fluoresence files and proceed in the same way for all mice automatically.
 
