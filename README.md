@@ -44,14 +44,19 @@ The optimization of parameters of the sigmoid function is performed using the no
 
 We can use the start of the local plateau for the estimation of the order of engagement after we have filtered out the local plateaus with poor sigmoid fitting. We must calibrate local plateaus to the start of the respective population plateau (burst) for defining the order of engagement of each neuron in this specific burst.
 
-Categorizing cells into temporal quartiles and comparing the variance of the distance of each cell with the quartile spatial mean and with the 
-variance of the distance to the spatial mean of all cells:
-y1=[bigDistB,bigDistG,bigDistY,bigDistR]%distance of each cell to the quartile (blue is the closest, red is the furthest) spatial mean
-y2=[bigDistBU,bigDistGU,bigDistYU,bigDistRU]%vs distance of the same cell to the spatial mean of all cells 
+Categorizing cells into temporal quartiles and comparing the variance of the distance of each cell with the quartile spatial mean and with the variance of the distance to the spatial mean of all cells:
+
+y1=[bigDistB,bigDistG,bigDistY,bigDistR]%distance of each cell to the quartile  spatial mean/centroid (blue is the closest, red is the furthest)
+
+y2=[bigDistBU,bigDistGU,bigDistYU,bigDistRU]%vs distance of the same cell to the global spatial mean/centroid of all cells 
+
 y=[y1;y2]
+
 group=[ones(1,105),2*ones(1,231),3*ones(1,224),4*ones(1,249)];%numbers refer to the number of cells belonging to each spatial quartile in all mice
-[P,ANOVATAB,STATS] = anova1(y,group)
-[c,m,h,nms] = multcompare(STATS,'display','off');
+
+[P,ANOVATAB,STATS] = anova1(y,group)%returns a structure, stats, which you can use to perform a multiple comparison test.
+
+[c,m,h,nms] = multcompare(STATS,'display','off');%  A multiple comparison test enables you to determine which pairs of group means are significantly different. To perform this test, use multcompare, providing the stats structure as an input argument.
 
 
 EEG CWT and PSD estimation
