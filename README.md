@@ -46,13 +46,13 @@ We can use the start of the local plateau for the estimation of the order of eng
 
 Categorizing cells into temporal quartiles and comparing the variance of the distance of each cell with the quartile spatial mean and with the variance of the distance to the spatial mean of all cells:
 
-y1=[bigDistB,bigDistG,bigDistY,bigDistR]%distance of each cell to the quartile  spatial mean/centroid (blue is the closest, red is the furthest)
+y1=[bigDistB,bigDistG,bigDistY,bigDistR]%distance of each cell to the quartile  spatial mean/centroid (blue B, green G, yellow Y, red R denote the four temporal quartiles from earliest to latest)
 
 y2=[bigDistBU,bigDistGU,bigDistYU,bigDistRU]%vs distance of the same cell to the global spatial mean/centroid of all cells 
 
 y=[y1;y2]
 
-group=[ones(1,105),2*ones(1,231),3*ones(1,224),4*ones(1,249)];%numbers refer to the number of cells belonging to each spatial quartile in all mice
+group=[ones(1,105),2*ones(1,231),3*ones(1,224),4*ones(1,249)];%numbers refer to the number of cells belonging to each quartile in all mice
 
 [P,ANOVATAB,STATS] = anova1(y,group)%returns a structure, stats, which you can use to perform a multiple comparison test.
 
