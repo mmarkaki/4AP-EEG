@@ -126,3 +126,387 @@ else
 end
 save(sprintf('matfiles/mouse%d/4AP/mouse%d_Y50sec.mat',mouse_id,mouse_id),'Y50s')
 end
+
+%Proceed to anova tests of statistical significance of spatiotemporal clustering:
+save('results/mouse7/Bursts/neuronInfo.mat','neuron')
+load('results/mouse7/Bursts/neuronInfo.mat')
+load('../data/mouse7/4AP/coordinates.mat')
+cellnum=length(neuron)
+%info for onsets:
+%neuron.plateaus_per_burst=[];
+%Figure 2B
+%ecdf init vs prop area
+for ib = 1:14
+    iblag=[];
+    near_neurons=[];
+    for i=1:cellnum
+%         if (coordinates(i,1)>= 450 && coordinates(i,2)>=150 )%init area
+%             continue
+%         end
+        ibindex=find(neuron(i).firstburst==ib);%8,ibindex=1
+        if (isempty(ibindex))
+             continue
+         end
+         near_neurons = [near_neurons i];
+         iblag=[iblag neuron(i).firstlag(ibindex)];%311 - ecdf of lags for burst 8
+    end
+    save(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib),'iblag')
+    save(sprintf('results/mouse7/Bursts/burst%d_nearn.mat',ib),'near_neurons')
+    %save(sprintf('burst%d_lagsInit.mat',ib),'iblag')
+    %save(sprintf('burst%d_nearnInit.mat',ib),'near_neurons')
+end
+figure('DefaultAxesFontSize',15)
+hold on
+for ib=1:14
+    load(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib));
+    refere=median(iblag);
+    %stde=6*iqr(iblag);
+    stde=max(abs(iblag-refere));
+    iblagC=(iblag-refere)./stde;
+    [y,x]=ecdf(iblagC);
+    plot(x,100*y,'Color', [8 8 8]/255)
+    pause
+end
+title('initiation area')
+title('All FOV')
+title('propagation area')
+
+xlabel('sec')
+ylabel('% recruited cells')
+xlabel('> 50% cells recruited')
+save('figures/mouse7/recruitment/wenzelb2.fig')
+save('figures/mouse7/recruitment/wenzelb2.png')
+save('figures/mouse5/recruitment/wenzelb2Init.fig')
+save('figures/mouse5/recruitment/wenzelb2Init.png')
+save('figures/mouse5/recruitment/wenzelb2Prop.fig')
+save('figures/mouse5/recruitment/wenzelb2Prop.png')
+
+%Figures 2E 2F
+%Determination of recruitment durations was done by calculating the time 
+%period from the first to last recruited registered cell, excluding the 5%
+%most deviant cells.
+figure('DefaultAxesFontSize',15)
+hold on 
+difburst=zeros(1,8);
+for ib=1:14
+    load(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib));%89
+    refere1=quantile(iblag,0.05);%78.95
+    refere2=quantile(iblag,0.95);%563
+    newblag=iblag(intersect(find(iblag>=refere1), find(iblag<=refere2)));%81
+    difburst(ib)=(max(newblag)-min(newblag))/30;
+end
+sum(difburst)/8%59.7/61.4/37.9/24.6917
+std(difburst)%65.2/64.6/51.4/17.7065
+mydat=[difburst;4*ones(1,14)];
+plot(mydat(2,:),mydat(1,:),'bo')
+figure(20);hold on;
+plot(difburst,'bo')
+legend('FOV','init.','prop.')
+legend('mouse 4','mouse 5')
+title('initiation area')
+title('All FOV')
+title('propagation area')
+ylabel('recruitment duration (sec)')
+set(gca,'xtick',[])
+set(gca,'xticklabel',[])
+%xlabel('bursts')
+
+figure('DefaultAxesFontSize',15)
+plot(difburst,'ro')
+xlabel('Bursts')
+ylabel('recruitment duration (sec)')
+save('figures/mouse6/recruitment/wenzele2.fig')
+save('figures/mouse6/recruitment/wenzele2.png')
+save('figures/mouse4/wenzelb2Prop.fig')
+save('figures/mouse4/wenzelb2Prop.png')
+
+%Figures 2G 2H
+%Left, Spatial analysis of propagation area: 
+%Spatiotemporal quartile clustering (quartiles calculated as mean coordinate
+%of 1–25% earliest cells, 25–50%, 50–75% and 75–100%, see Materials and Methods)
+%across 8 consecutive seizures (bivariate ANOVA p < 0.001, all extrafocal 
+figure('DefaultAxesFontSize',15)
+hold on 
+X1=[];
+X2=[];
+X1L=[];
+X2L=[];
+for ib=1:14
+    load(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib));%367 lag
+    load(sprintf('results/mouse7/Bursts/burst%d_nearn.mat',ib));%503 neuron
+    if length(iblag)>3
+        refere1=quantile(iblag,0.25);%earliest 25% 367
+        newblag1=find(iblag<=refere1);%1
+        location11=sum(coordinates(near_neurons(newblag1),1))/length(newblag1);
+        location12=sum(coordinates(near_neurons(newblag1),2))/length(newblag1);
+        plot(location12,location11,'b.','MarkerSize',20)
+        X1=[X1 location11];
+        X2=[X2 location12];
+        refere2=quantile(iblag,0.5);%563
+        newblag2=intersect(find(iblag>=refere1), find(iblag<=refere2));%81
+        location11=sum(coordinates(near_neurons(newblag2),1))/length(newblag2);
+        location12=sum(coordinates(near_neurons(newblag2),2))/length(newblag2);
+        plot(location12,location11,'g.','MarkerSize',20)
+        X1=[X1 location11];
+        X2=[X2 location12];
+        refere3=quantile(iblag,0.75);%563
+        newblag3=intersect(find(iblag>=refere2), find(iblag<=refere3));%81
+        location11=sum(coordinates(near_neurons(newblag3),1))/length(newblag3);
+        location12=sum(coordinates(near_neurons(newblag3),2))/length(newblag3);
+        plot(location12,location11,'y.','MarkerSize',20)
+        X1L=[X1L location11];
+        X2L=[X2L location12];
+        %latest:
+        newblag4=find(iblag>refere3);%81
+        location11=sum(coordinates(near_neurons(newblag4),1))/length(newblag4);
+        location12=sum(coordinates(near_neurons(newblag4),2))/length(newblag4);
+        plot(location12,location11,'r.','MarkerSize',20)
+        X1L=[X1L location11];
+        X2L=[X2L location12];
+    end
+end
+title('ALL FOV')
+title('initiation area')
+title('propagation area')
+xlim(gca,[0 max(coordinates(:,2)+20)])
+ylim(gca,[0 max(coordinates(:,1)+20)])
+%  c.Label.String = 'Early vs Late Cells';
+%    caxis%-0.3 ([62.8,639.1])16 111841
+    xlabel('y-coordinates (ìm)')
+    ylabel('x-coordinates (ìm)')
+    legend('earliest','early','late','latest')
+    save('figures/mouse7/recruitment/wenzelH2.fig')
+save('figures/mouse7/recruitment/wenzelH2.png')
+%Initiation area x-coordinates > 470, y coordinates > 200
+%participates in all bursts coordinates(238,:)  473.3871  338.9355
+%clustering of these according to Wenzel:
+% X(:,1)=[X1, X1L]
+% X(:,2)=[X2, X2L]
+% opts = statset('Display','iter');
+% [idx,C,sumd,d,midx,info] = kmedoids(X,2,'Distance','cityblock','Options',opts);
+
+%exp. p < 0.05). Right, Spatial analysis of initiation site: Spatiotemporal 
+%quartile clustering (each quartile coordinate = spatial mean of 25% recruited cells)
+%clustering across 10 consecutive seizures (bivariate ANOVA p = 0.0145, all
+%intrafocal exp. p < 0.05). Depiction of statistical significance for Figure 2:
+%*p < 0.05; ***p < 0.001.
+%a conserved spatial pattern of relative cell recruitment was evident in both
+%compartments across seizures. … To quantify and compare these observed 
+%spatiotemporal patterns, we used a 2-dimensional ANOVA (Wenzel et al., 2017),
+%categorizing cells into temporal quartiles and comparing the variance of the
+%distance of each cell with the quartile spatial mean and with the variance 
+%of the distance to the spatial mean of all cells (Fig. 2G). The analysis
+%yielded significant differences between distributions, with bivariate F-values
+%for all experiments in the propagation area (F = 12.67, 11.64, 41.22; 
+%all p < 0.001) and in the seizure initiation site. 
+
+%distance from population centroid:
+figure('DefaultAxesFontSize',15)
+hold on 
+X1R=[];
+X2R=[];
+X1Y=[];
+X2Y=[];
+X1G=[];
+X2G=[];
+X1B=[];
+X2B=[];
+for ib=1:14
+    figure('DefaultAxesFontSize',15)
+    hold on 
+    load(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib));%235 lags
+    load(sprintf('results/mouse7/Bursts/burst%d_nearn.mat',ib));%503 neuron
+    if length(iblag)>3
+        refere1=quantile(iblag,0.25);%earliest 25% 696
+        newblag1=find(iblag<=refere1);%59
+        location11=sum(coordinates(near_neurons(newblag1),1))/length(newblag1);
+        location12=sum(coordinates(near_neurons(newblag1),2))/length(newblag1);
+        for jj=1:length(newblag1)
+            plot(coordinates(near_neurons(newblag1(jj)),2),coordinates(near_neurons(newblag1(jj)),1),'b.','MarkerSize',8)
+        end
+        plot(location12,location11,'b.','MarkerSize',20)
+        X1B=[X1B location11];
+        X2B=[X2B location12];
+        refere2=quantile(iblag,0.5);%959
+        newblag2=intersect(find(iblag>=refere1), find(iblag<=refere2));%59
+        location11=sum(coordinates(near_neurons(newblag2),1))/length(newblag2);
+        location12=sum(coordinates(near_neurons(newblag2),2))/length(newblag2);
+        plot(location12,location11,'g.','MarkerSize',20)
+        X1G=[X1G location11];
+        X2G=[X2G location12];
+        for jj=1:length(newblag2)
+            plot(coordinates(near_neurons(newblag2(jj)),2),coordinates(near_neurons(newblag2(jj)),1),'g.','MarkerSize',8)
+        end
+        refere3=quantile(iblag,0.75);%1164
+        newblag3=intersect(find(iblag>=refere2), find(iblag<=refere3));%61
+        location11=sum(coordinates(near_neurons(newblag3),1))/length(newblag3);
+        location12=sum(coordinates(near_neurons(newblag3),2))/length(newblag3);
+        plot(location12,location11,'y.','MarkerSize',20)
+        for jj=1:length(newblag3)
+            plot(coordinates(near_neurons(newblag3(jj)),2),coordinates(near_neurons(newblag3(jj)),1),'y.','MarkerSize',8)
+        end
+        X1Y=[X1Y location11];
+        X2Y=[X2Y location12];
+        %latest:
+        newblag4=find(iblag>refere3);%57
+        location11=sum(coordinates(near_neurons(newblag4),1))/length(newblag4);
+        location12=sum(coordinates(near_neurons(newblag4),2))/length(newblag4);
+        plot(location12,location11,'r.','MarkerSize',20)
+        X1R=[X1R location11];
+        X2R=[X2R location12];
+        for jj=1:length(newblag4)
+            plot(coordinates(near_neurons(newblag4(jj)),2),coordinates(near_neurons(newblag4(jj)),1),'r.','MarkerSize',8)
+        end
+    end
+    title(sprintf('Burst %d',ib));%     set(gca,'ydir','reverse')
+    xlim(gca,[0 max(coordinates(:,2)+20)])
+    ylim(gca,[0 max(coordinates(:,1)+20)])
+    xlabel('y-coordinates (ìm)')
+    ylabel('x-coordinates (ìm)')
+    pause
+    saveas(gcf,sprintf('figures/mouse7/recruitment/neuronsBurstQuantLags%d.png',ib))
+    saveas(gcf,sprintf('figures/mouse7/recruitment/neuronsBurstQuantLags%d.fig',ib))
+end
+title('ALL FOV')
+% title('initiation area')
+% title('propagation area')
+set(gca,'ydir','reverse')
+xlim(gca,[0 max(coordinates(:,2)+20)])
+ylim(gca,[0 max(coordinates(:,1)+20)])
+%  c.Label.String = 'Early vs Late Cells';
+%    caxis%-0.3 ([62.8,639.1])16 111841
+xlabel('y-coordinates (ìm)')
+ylabel('x-coordinates (ìm)')
+legend('earliest','early','late','latest')
+save('figures/mouse7/recruitment/wenzel2019H2.fig')
+save('figures/mouse7/recruitment/wenzel2019H2.png')
+
+%2-dimensional ANOVA (Wenzel et al., 2017),
+%categorizing cells into temporal quartiles and comparing the variance of the
+%distance of each cell with the quartile spatial mean (X1B,X1G,X1Y,X1R) and with the variance 
+%of the distance to the spatial mean of all cells (mean1cellsBurst) (Fig. 2G). The analysis
+%yielded significant differences between distributions, with bivariate F-values
+%for all experiments in the propagation area (F = 12.67, 11.64, 41.22; 
+%all p < 0.001) and in the seizure initiation site. 
+%spatial mean of all cells:
+% mean1cells=sum(coordinates(:,1))/cellnum;%189.59
+% mean2cells=sum(coordinates(:,2))/cellnum;%304.75
+mean1cellsBurst=0.25*(X1B+X1G+X1Y+X1R);%the mean x coordinate in every burst
+mean2cellsBurst=0.25*(X2B+X2G+X2Y+X2R);%the mean y coordinate in every burst
+
+bigDistB=[];
+ bigDistBU=[];
+  bigGroupB=[];
+  bigDistG=[];
+ bigDistGU=[];
+  bigGroupG=[];
+  bigDistY=[];
+ bigDistYU=[];
+  bigGroupY=[];
+  bigDistR=[];
+ bigDistRU=[];
+  bigGroupR=[];
+for ib=1:14%
+    %ib=16;
+    load(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib));
+    %235/15/23/56/45/4/23/6/18/5/12/27/14/5/103 lags
+    load(sprintf('results/mouse7/Bursts/burst%d_nearn.mat',ib));%
+    if length(iblag)>3
+        refere1=quantile(iblag,0.25);%earliest 25% 
+        newblag1=find(iblag<=refere1);%59/4/6/14/11/3/6/2/5/1/3/7/4/1/26
+        location11=sum(coordinates(near_neurons(newblag1),1))/length(newblag1);
+        location12=sum(coordinates(near_neurons(newblag1),2))/length(newblag1);
+        %distances from clusters centroids:
+        distCellB=zeros(1,length(newblag1));
+        distCellBuni=zeros(1,length(newblag1));
+        %ib=15
+        for i=1:length(newblag1)
+            distCellB(i)=sqrt((coordinates(near_neurons(newblag1(i)),1)-location11).^2+(coordinates(near_neurons(newblag1(i)),2)-location12).^2);
+            distCellBuni(i)=sqrt((coordinates(near_neurons(newblag1(i)),1)-mean1cellsBurst(ib)).^2+(coordinates(near_neurons(newblag1(i)),2)-mean2cellsBurst(ib)).^2);
+        end
+        bigDistB=[bigDistB distCellB];
+        bigDistBU=[bigDistBU distCellBuni];
+        bigGroupB=[bigGroupB length(newblag1)];
+        meandistCellB(ib)=mean(distCellB);%
+        meandistCellBuni(ib)=mean(distCellBuni);%
+        stddistCellB(ib)=std(distCellB);%
+        stddistCellBuni(ib)=std(distCellBuni);%
+        refere2=quantile(iblag,0.5);%959
+        newblag2=intersect(find(iblag>=refere1), find(iblag<=refere2));%59
+        location11=sum(coordinates(near_neurons(newblag2),1))/length(newblag2);
+        location12=sum(coordinates(near_neurons(newblag2),2))/length(newblag2);
+        for i=1:length(newblag2)
+            distCellG(i)=sqrt((coordinates(near_neurons(newblag2(i)),1)-location11).^2+(coordinates(near_neurons(newblag2(i)),2)-location12).^2);
+            distCellGuni(i)=sqrt((coordinates(near_neurons(newblag2(i)),1)-mean1cellsBurst(ib)).^2+(coordinates(near_neurons(newblag2(i)),2)-mean2cellsBurst(ib)).^2);
+        end
+        bigDistG=[bigDistG distCellG];
+        bigDistGU=[bigDistGU distCellGuni];
+        bigGroupG=[bigGroupG length(newblag2)];
+        
+        meandistCellG(ib)=mean(distCellG);%%
+        meandistCellGuni(ib)=mean(distCellGuni);%
+        stddistCellG(ib)=std(distCellG);%
+        stddistCellGuni(ib)=std(distCellGuni);%
+        refere3=quantile(iblag,0.75);%1164
+        newblag3=intersect(find(iblag>=refere2), find(iblag<=refere3));%61
+        location11=sum(coordinates(near_neurons(newblag3),1))/length(newblag3);
+        location12=sum(coordinates(near_neurons(newblag3),2))/length(newblag3);
+        for i=1:length(newblag3)
+            distCellY(i)=sqrt((coordinates(near_neurons(newblag3(i)),1)-location11).^2+(coordinates(near_neurons(newblag3(i)),2)-location12).^2);
+            distCellYuni(i)=sqrt((coordinates(near_neurons(newblag3(i)),1)-mean1cellsBurst(ib)).^2+(coordinates(near_neurons(newblag3(i)),2)-mean2cellsBurst(ib)).^2);
+        end
+        bigDistY=[bigDistY distCellY];
+        bigDistYU=[bigDistYU distCellYuni];
+        bigGroupY=[bigGroupY length(newblag3)];
+         meandistCellY(ib)=   mean(distCellY);%
+        meandistCellYuni(ib)=mean(distCellYuni);%
+        stddistCellY(ib)=std(distCellY);%
+        stddistCellYuni(ib)=std(distCellYuni);%
+        %latest:
+        newblag4=find(iblag>refere3);%57
+        location11=sum(coordinates(near_neurons(newblag4),1))/length(newblag4);
+        location12=sum(coordinates(near_neurons(newblag4),2))/length(newblag4);
+        for i=1:length(newblag4)
+            distCellR(i)=sqrt((coordinates(near_neurons(newblag4(i)),1)-location11).^2+(coordinates(near_neurons(newblag4(i)),2)-location12).^2);
+            distCellRuni(i)=sqrt((coordinates(near_neurons(newblag4(i)),1)-mean1cellsBurst(ib)).^2+(coordinates(near_neurons(newblag4(i)),2)-mean2cellsBurst(ib)).^2);
+        end
+        bigDistR=[bigDistR distCellR];
+        bigDistRU=[bigDistRU distCellRuni];
+        bigGroupR=[bigGroupR length(newblag4)];
+        meandistCellR(ib)=mean(distCellR);%
+        meandistCellRuni(ib)=mean(distCellRuni);%
+        stddistCellR(ib)=std(distCellR);%
+        stddistCellRuni(ib)=std(distCellRuni);%
+    end
+end
+
+%categorizing cells into temporal quartiles and comparing the variance of 
+%the distance of each cell with the quartile spatial mean and with the 
+%variance of the distance to the spatial mean of all cells 
+%anova%y1=[stddistCellB,stddistCellG,stddistCellY,stddistCellR]
+y1=[bigDistB,bigDistG,bigDistY,bigDistR]%2805
+y2=[bigDistBU,bigDistGU,bigDistYU,bigDistRU]%2805%y2=[stddistCellBuni,stddistCellGuni,stddistCellYuni,stddistCellRuni]
+y=[y1;y2]
+%y=[y2;y1];
+%group=
+group=[ones(1,105),2*ones(1,231),3*ones(1,224),4*ones(1,249)];
+%group=[ones(1,15),2*ones(1,15),3*ones(1,15),4*ones(1,15)];
+[P,ANOVATAB,STATS] = anova1(y,group)
+[c,m,h,nms] = multcompare(STATS,'display','off');
+ [nms num2cell(m)]   
+%number of members:
+n=[235,15,23,56,45,4,23,6,18,5,12,27,14,5,103]
+%anova in each burst separately:
+y1=[bigDistB]%2805
+y2=[bigDistBU]%2805%y2=[stddistCellBuni,stddistCellGuni,stddistCellYuni,stddistCellRuni]
+y=[y1;y2]
+%y=[y2;y1];
+%group=
+group=[ones(1,337)];
+%group=[ones(1,15),2*ones(1,15),3*ones(1,15),4*ones(1,15)];
+[P,ANOVATAB,STATS] = anova1(y,group)
+[c,m,h,nms] = multcompare(STATS,'display','off');
+ [nms num2cell(m)]   
+ 
+
+
