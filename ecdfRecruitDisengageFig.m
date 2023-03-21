@@ -127,16 +127,13 @@ end
 save(sprintf('matfiles/mouse%d/4AP/mouse%d_Y50sec.mat',mouse_id,mouse_id),'Y50s')
 end
 
+%end of function
+
 %Proceed to anova tests of statistical significance of spatiotemporal clustering:
-save('results/mouse7/Bursts/neuronInfo.mat','neuron')
-load('results/mouse7/Bursts/neuronInfo.mat')
-load('../data/mouse7/4AP/coordinates.mat')
-cellnum=length(neuron)
-%info for onsets:
-%neuron.plateaus_per_burst=[];
-%Figure 2B
-%ecdf init vs prop area
-for ib = 1:14
+%save('results/mouse7/Bursts/neuronInfo.mat','neuron')
+%load('results/mouse7/Bursts/neuronInfo.mat')
+%load('../data/mouse7/4AP/coordinates.mat')
+for ib = 1:nbursts%number of global plateaus/bursts
     iblag=[];
     near_neurons=[];
     for i=1:cellnum
@@ -150,15 +147,15 @@ for ib = 1:14
          near_neurons = [near_neurons i];
          iblag=[iblag neuron(i).firstlag(ibindex)];%311 - ecdf of lags for burst 8
     end
-    save(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib),'iblag')
-    save(sprintf('results/mouse7/Bursts/burst%d_nearn.mat',ib),'near_neurons')
+    save(sprintf('results/mouse%/Bursts/burst%d_lags.mat',mouse_id,ib),'iblag')
+    save(sprintf('results/mouse%/Bursts/burst%d_nearn.mat',mouse_id,ib),'near_neurons')
     %save(sprintf('burst%d_lagsInit.mat',ib),'iblag')
     %save(sprintf('burst%d_nearnInit.mat',ib),'near_neurons')
 end
 figure('DefaultAxesFontSize',15)
 hold on
-for ib=1:14
-    load(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib));
+for ib=1:nbursts
+    load(sprintf('results/mouse%/Bursts/burst%d_lags.mat',mouse_id,ib));
     refere=median(iblag);
     %stde=6*iqr(iblag);
     stde=max(abs(iblag-refere));
@@ -174,12 +171,12 @@ title('propagation area')
 xlabel('sec')
 ylabel('% recruited cells')
 xlabel('> 50% cells recruited')
-save('figures/mouse7/recruitment/wenzelb2.fig')
-save('figures/mouse7/recruitment/wenzelb2.png')
-save('figures/mouse5/recruitment/wenzelb2Init.fig')
-save('figures/mouse5/recruitment/wenzelb2Init.png')
-save('figures/mouse5/recruitment/wenzelb2Prop.fig')
-save('figures/mouse5/recruitment/wenzelb2Prop.png')
+save(sprintf('figures/mouse%/recruitment/wenzelb2.fig',mouse_id))
+save(sprintf('figures/mouse%/recruitment/wenzelb2.png',mouse_id))
+save(sprintf('figures/mouse%/recruitment/wenzelb2Init.fig',mouse_id))
+save(sprintf('figures/mouse%/recruitment/wenzelb2Init.png',mouse_id))
+save(sprintf('figures/mouse%/recruitment/wenzelb2Prop.fig',mouse_id))
+save(sprintf('figures/mouse%/recruitment/wenzelb2Prop.png',mouse_id))
 
 %Figures 2E 2F
 %Determination of recruitment durations was done by calculating the time 
@@ -188,8 +185,8 @@ save('figures/mouse5/recruitment/wenzelb2Prop.png')
 figure('DefaultAxesFontSize',15)
 hold on 
 difburst=zeros(1,8);
-for ib=1:14
-    load(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib));%89
+for ib=1:nbursts
+    load(sprintf('results/mouse%/Bursts/burst%d_lags.mat',mouse_id,ib));%89
     refere1=quantile(iblag,0.05);%78.95
     refere2=quantile(iblag,0.95);%563
     newblag=iblag(intersect(find(iblag>=refere1), find(iblag<=refere2)));%81
@@ -202,7 +199,7 @@ plot(mydat(2,:),mydat(1,:),'bo')
 figure(20);hold on;
 plot(difburst,'bo')
 legend('FOV','init.','prop.')
-legend('mouse 4','mouse 5')
+%legend('mouse 4','mouse 5')
 title('initiation area')
 title('All FOV')
 title('propagation area')
@@ -215,10 +212,10 @@ figure('DefaultAxesFontSize',15)
 plot(difburst,'ro')
 xlabel('Bursts')
 ylabel('recruitment duration (sec)')
-save('figures/mouse6/recruitment/wenzele2.fig')
-save('figures/mouse6/recruitment/wenzele2.png')
-save('figures/mouse4/wenzelb2Prop.fig')
-save('figures/mouse4/wenzelb2Prop.png')
+save(sprintf('figures/mouse%/recruitment/wenzele2.fig',mouse_id))
+save(sprintf('figures/mouse%/recruitment/wenzele2.png',mouse_id))
+save(sprintf('figures/mouse%/wenzelb2Prop.fig',mouse_id))
+save(sprintf('figures/mouse%/wenzelb2Prop.png',mouse_id))
 
 %Figures 2G 2H
 %Left, Spatial analysis of propagation area: 
@@ -231,9 +228,9 @@ X1=[];
 X2=[];
 X1L=[];
 X2L=[];
-for ib=1:14
-    load(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib));%367 lag
-    load(sprintf('results/mouse7/Bursts/burst%d_nearn.mat',ib));%503 neuron
+for ib=1:nbursts
+    load(sprintf('results/mouse%/Bursts/burst%d_lags.mat',mouse_id,ib));%367 lag
+    load(sprintf('results/mouse%/Bursts/burst%d_nearn.mat',mouse_id,ib));%503 neuron
     if length(iblag)>3
         refere1=quantile(iblag,0.25);%earliest 25% 367
         newblag1=find(iblag<=refere1);%1
@@ -272,11 +269,11 @@ xlim(gca,[0 max(coordinates(:,2)+20)])
 ylim(gca,[0 max(coordinates(:,1)+20)])
 %  c.Label.String = 'Early vs Late Cells';
 %    caxis%-0.3 ([62.8,639.1])16 111841
-    xlabel('y-coordinates (ìm)')
-    ylabel('x-coordinates (ìm)')
-    legend('earliest','early','late','latest')
-    save('figures/mouse7/recruitment/wenzelH2.fig')
-save('figures/mouse7/recruitment/wenzelH2.png')
+xlabel('y-coordinates (ìm)')
+ylabel('x-coordinates (ìm)')
+legend('earliest','early','late','latest')
+save(sprintf('figures/mouse%/recruitment/wenzelH2.fig',mouse_id))
+save(sprintf('figures/mouse%/recruitment/wenzelH2.png',mouse_id))
 %Initiation area x-coordinates > 470, y coordinates > 200
 %participates in all bursts coordinates(238,:)  473.3871  338.9355
 %clustering of these according to Wenzel:
@@ -314,8 +311,8 @@ X2B=[];
 for ib=1:14
     figure('DefaultAxesFontSize',15)
     hold on 
-    load(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib));%235 lags
-    load(sprintf('results/mouse7/Bursts/burst%d_nearn.mat',ib));%503 neuron
+    load(sprintf('results/mouse%/Bursts/burst%d_lags.mat',mouse_id,ib));%235 lags
+    load(sprintf('results/mouse%/Bursts/burst%d_nearn.mat',mouse_id,ib));%503 neuron
     if length(iblag)>3
         refere1=quantile(iblag,0.25);%earliest 25% 696
         newblag1=find(iblag<=refere1);%59
@@ -364,8 +361,8 @@ for ib=1:14
     xlabel('y-coordinates (ìm)')
     ylabel('x-coordinates (ìm)')
     pause
-    saveas(gcf,sprintf('figures/mouse7/recruitment/neuronsBurstQuantLags%d.png',ib))
-    saveas(gcf,sprintf('figures/mouse7/recruitment/neuronsBurstQuantLags%d.fig',ib))
+    saveas(gcf,sprintf('figures/mouse%/recruitment/neuronsBurstQuantLags%d.png',mouse_id,ib))
+    saveas(gcf,sprintf('figures/mouse%/recruitment/neuronsBurstQuantLags%d.fig',mouse_id,ib))
 end
 title('ALL FOV')
 % title('initiation area')
@@ -378,8 +375,8 @@ ylim(gca,[0 max(coordinates(:,1)+20)])
 xlabel('y-coordinates (ìm)')
 ylabel('x-coordinates (ìm)')
 legend('earliest','early','late','latest')
-save('figures/mouse7/recruitment/wenzel2019H2.fig')
-save('figures/mouse7/recruitment/wenzel2019H2.png')
+save(sprintf('figures/mouse%/recruitment/wenzel2019H2.fig',mouse_id))
+save(sprintf('figures/mouse%/recruitment/wenzel2019H2.png',mouse_id))
 
 %2-dimensional ANOVA (Wenzel et al., 2017),
 %categorizing cells into temporal quartiles and comparing the variance of the
@@ -395,22 +392,20 @@ mean1cellsBurst=0.25*(X1B+X1G+X1Y+X1R);%the mean x coordinate in every burst
 mean2cellsBurst=0.25*(X2B+X2G+X2Y+X2R);%the mean y coordinate in every burst
 
 bigDistB=[];
- bigDistBU=[];
-  bigGroupB=[];
-  bigDistG=[];
- bigDistGU=[];
-  bigGroupG=[];
-  bigDistY=[];
- bigDistYU=[];
-  bigGroupY=[];
-  bigDistR=[];
- bigDistRU=[];
-  bigGroupR=[];
-for ib=1:14%
-    %ib=16;
-    load(sprintf('results/mouse7/Bursts/burst%d_lags.mat',ib));
-    %235/15/23/56/45/4/23/6/18/5/12/27/14/5/103 lags
-    load(sprintf('results/mouse7/Bursts/burst%d_nearn.mat',ib));%
+bigDistBU=[];
+bigGroupB=[];
+bigDistG=[];
+bigDistGU=[];
+bigGroupG=[];
+bigDistY=[];
+bigDistYU=[];
+bigGroupY=[];
+bigDistR=[];
+bigDistRU=[];
+bigGroupR=[];
+for ib=1:nbursts
+    load(sprintf('results/mouse%/Bursts/burst%d_lags.mat',mouse_id,ib));
+    load(sprintf('results/mouse%/Bursts/burst%d_nearn.mat',mouse_id,ib));%
     if length(iblag)>3
         refere1=quantile(iblag,0.25);%earliest 25% 
         newblag1=find(iblag<=refere1);%59/4/6/14/11/3/6/2/5/1/3/7/4/1/26
